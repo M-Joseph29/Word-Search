@@ -1,0 +1,46 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Word Search Game</h1>
+    <input type="text" id="words" placeholder="Enter words separated by spaces">
+    <button onclick="generateGrid()">Generate</button>
+    <div id="grid"></div>
+
+    <script>
+        async function generateGrid() {
+            const words = document.getElementById('words').value.trim().toUpperCase().split(/\s+/);
+            const response = await fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ words: words })
+            });
+            const grid = await response.json();
+            displayGrid(grid);
+        }
+
+        function displayGrid(grid) {
+            const gridContainer = document.getElementById('grid');
+            gridContainer.innerHTML = '';
+            grid.forEach(row => {
+                const rowDiv = document.createElement('div');
+                row.forEach(cell => {
+                    const cellSpan = document.createElement('span');
+                    cellSpan.textContent = cell;
+                    cellSpan.className = 'cell';
+                    rowDiv.appendChild(cellSpan);
+                });
+                gridContainer.appendChild(rowDiv);
+            });
+        }
+    </script>
+</body>
+</html>
